@@ -9,6 +9,48 @@ export default class Search extends React.Component {
     this.state = { query: '' };
   }
 
+  // searchByGeolocation(){
+  //   navigator.geolocation.getCurrentPosition(function(position) {
+  //   console.log(position.coords)
+  //   });
+  // }
+
+  searchByGeolocation(){
+    const self = this;
+    if(navigator.geolocation){
+
+      navigator.geolocation.getCurrentPosition(function(position){
+
+        console.log(position.coords)
+
+        const { latitude, longitude } = position.coords; //
+
+        const latlng = { lat: Number(latitude), lng: Number(longitude) }; //
+
+        const geocoder = new google.maps.Geocoder; 
+
+        geocoder.geocode({ 'location': latlng }, function(results, status) {
+
+          if (results && results.length){
+
+            const { formatted_address } = results[0]; 
+
+            // self.setState({ query: formatted_address});
+
+            self.setState({ query: formatted_address});
+            self.props.setAddress("177 W Gray St, Houston, TX 77019, USA")
+          }
+        });
+      });
+    }
+
+    else{
+
+      console.log("position doesn't exist");
+    }
+  }
+
+
   render() {
     return (
       <div className="body-color">
@@ -28,6 +70,13 @@ export default class Search extends React.Component {
             data-name="Address 2"
             className="w-input input"
           />
+
+        <img 
+        onClick={() => this.searchByGeolocation()}
+        alt="target icon"
+        src="images/input-icon.svg"
+        className="address-icon"/>
+
           {
             this.state.query
               ? null
